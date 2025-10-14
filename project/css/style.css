@@ -2326,6 +2326,11 @@ select {
     display: none;
   }
 }
+@media (max-width: 767px) {
+  .program-list body.search-page .program-list {
+    display: flex !important;
+  }
+}
 
 .program-card {
   border: 1px solid var(--color-main-blue);
