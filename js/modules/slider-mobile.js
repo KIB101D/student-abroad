@@ -1,53 +1,79 @@
 export function initSlider() {
-    if (window.location.pathname !== '/uni-list.html' && !window.location.pathname.endsWith('uni-list.html')) {
-        console.log('Slider initialization skipped: not on uni-list.html');
+    const path = window.location.pathname;
+    const allowedPages = ['uni-list.html', 'program-list.html'];
+    const isAllowed = allowedPages.some(page => path.endsWith(page) || path === `/${page}`);
+
+    if (!isAllowed) {
+        console.log('Slider initialization skipped: not on allowed pages');
         return;
     }
 
-    const track = document.querySelector('.slider__track');
+    // --- ОРИГІНАЛ ---
     const cards = document.querySelectorAll('.university-card-m');
-    const prevArrow = document.querySelector('.slider__arrow--left');
-    const nextArrow = document.querySelector('.slider__arrow--right');
+
+    // --- ВИБІР АКТИВНИХ КАРТОК ---
+    const programCards = document.querySelectorAll('.program-card-m');
+    const activeCardsNodeList = programCards.length ? programCards : cards;
+    const cardSelector = programCards.length ? '.program-card-m' : '.university-card-m';
+
+    // --- ВИБІР ПРАВИЛЬНИХ СТРІЛОК ---
+    const isProgramPage = path.endsWith('program-list.html');
+    const prevArrow = document.querySelector(isProgramPage ? '.slider__arrow--left-p' : '.slider__arrow--left');
+    const nextArrow = document.querySelector(isProgramPage ? '.slider__arrow--right-p' : '.slider__arrow--right');
+
+    // Основні елементи слайдера
+    const track = document.querySelector('.slider__track');
     const indicators = document.querySelectorAll('.slider__indicator');
+
+    // Початкові змінні
     let currentIndex = 0;
     let isAnimating = false;
 
-    if (!track || !cards.length || !indicators.length) {
+    // Перевірка наявності потрібних елементів
+    if (!track || !activeCardsNodeList.length || !indicators.length) {
         console.error('Required slider elements are missing:', {
-            track: track,
-            cards: cards.length,
+            track: !!track,
+            activeCards: activeCardsNodeList.length,
             indicators: indicators.length
         });
         return;
     }
 
+    const activeCards = Array.from(activeCardsNodeList);
+
     // Клонуємо перший і останній слайди для безкінечного ефекту
-    const firstClone = cards[0].cloneNode(true);
-    const lastClone = cards[cards.length - 1].cloneNode(true);
+    const firstClone = activeCards[0].cloneNode(true);
+    const lastClone = activeCards[activeCards.length - 1].cloneNode(true);
 
-    // Додаємо клони на початок і кінець
+    // Додаємо клони в трек
     track.appendChild(firstClone);
-    track.insertBefore(lastClone, cards[0]);
+    track.insertBefore(lastClone, activeCards[0]);
 
-    // Оновлюємо посилання на всі слайди (включаючи клони)
-    const allSlides = document.querySelectorAll('.university-card-m');
+    // Всі слайди всередині треку
+    const allSlides = Array.from(track.querySelectorAll(cardSelector));
     const totalSlides = allSlides.length;
 
-    // Встановлюємо початкову позицію (перший клонований слайд - останній оригінальний)
+    console.log('Slider init:', {
+        page: path,
+        cardSelector,
+        totalSlides,
+        arrows: { prev: !!prevArrow, next: !!nextArrow }
+    });
+
+    // Початкове зміщення треку
     track.style.transform = `translateX(-${100}%)`;
 
-    // Функція для оновлення індикаторів
+    // === ФУНКЦІЇ СЛАЙДЕРА ===
+
     function updateIndicators() {
-        // Визначаємо правильний індекс для індикаторів (0 або 1)
         let indicatorIndex;
 
-        // Корегуємо індекс для крайніх випадків
-        if (currentIndex >= cards.length) {
-            indicatorIndex = 0; // Перший індикатор для "наступного" після останнього
+        if (currentIndex >= activeCards.length) {
+            indicatorIndex = 0;
         } else if (currentIndex < 0) {
-            indicatorIndex = 1; // Другий індикатор для "попереднього" перед першим
+            indicatorIndex = indicators.length - 1;
         } else {
-            indicatorIndex = currentIndex % 2;
+            indicatorIndex = currentIndex % indicators.length;
         }
 
         indicators.forEach((indicator, index) => {
@@ -62,20 +88,18 @@ export function initSlider() {
         track.style.transition = 'transform 0.4s ease-in-out';
         track.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
 
-        // Оновлюємо індикатори відразу, без затримки
         updateIndicators();
 
         setTimeout(() => {
             isAnimating = false;
 
-            // Якщо досягли клонованого слайда, миттєво переходимо до відповідного оригінального
-            if (currentIndex >= cards.length) {
+            if (currentIndex >= activeCards.length) {
                 track.style.transition = 'none';
                 currentIndex = 0;
                 track.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
             } else if (currentIndex < 0) {
                 track.style.transition = 'none';
-                currentIndex = cards.length - 1;
+                currentIndex = activeCards.length - 1;
                 track.style.transform = `translateX(-${(currentIndex + 1) * 100}%)`;
             }
         }, 400);
@@ -93,15 +117,11 @@ export function initSlider() {
         updateSlider();
     }
 
-    if (prevArrow) {
-        prevArrow.addEventListener('click', goToPrevSlide);
-    }
+    // --- НАВІГАЦІЙНІ СТРІЛКИ ---
+    if (prevArrow) prevArrow.addEventListener('click', goToPrevSlide);
+    if (nextArrow) nextArrow.addEventListener('click', goToNextSlide);
 
-    if (nextArrow) {
-        nextArrow.addEventListener('click', goToNextSlide);
-    }
-
-    // Додаємо обробку свайпів для мобільних пристроїв
+    // --- СВАЙПИ ---
     let startX = 0;
     let endX = 0;
 
@@ -121,14 +141,11 @@ export function initSlider() {
         const diffX = startX - endX;
 
         if (Math.abs(diffX) > swipeThreshold) {
-            if (diffX > 0) {
-                goToNextSlide();
-            } else {
-                goToPrevSlide();
-            }
+            if (diffX > 0) goToNextSlide();
+            else goToPrevSlide();
         }
     }
 
-    // Ініціалізація початкового стану
+    // --- ІНІЦІАЛІЗАЦІЯ ---
     updateIndicators();
 }
