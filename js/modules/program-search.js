@@ -7,6 +7,13 @@ export function initProgramSearch() {
     // Перевіряємо, чи ми на сторінці search.html
     if (window.location.pathname.includes('search.html')) {
         processSearchPage();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.program-card');
+            cards.forEach(card => {
+                card.style.display = 'flex';
+            });
+        });
     }
 }
 
@@ -63,6 +70,12 @@ function loadAndFilterPrograms(searchQuery) {
             const programCards = doc.querySelectorAll('.program-card');
 
             const filteredPrograms = filterPrograms(programCards, searchQuery);
+
+            // 🟢 ДОДАНО: Змінюємо стиль відображення навіть у завантажених картках
+            filteredPrograms.forEach(card => {
+                card.style.display = 'flex';
+            });
+
             displayResults(filteredPrograms, searchQuery);
         })
         .catch(error => {
@@ -79,11 +92,9 @@ function filterPrograms(programCards, searchQuery) {
     const query = searchQuery.toLowerCase().trim();
 
     programCards.forEach(card => {
-        // Шукаємо в текстовому вмісті (для обох мов)
         const cardText = card.textContent.toLowerCase();
         const hasMatch = cardText.includes(query);
 
-        // Шукаємо в data-атрибутах (якщо вони є)
         const dataAttributes = card.querySelectorAll('[data-ua], [data-en]');
         let dataMatch = false;
 
@@ -115,14 +126,13 @@ function displayResults(programs, searchQuery) {
         return;
     }
 
-    // Створюємо контейнер для результатів
     const resultsContainer = document.createElement('section');
     resultsContainer.className = 'search-results';
     resultsContainer.innerHTML = `
         <div class="container">
             <h1 class="search-results__title" 
-                data-en="Search results for: \"${searchQuery}\""
-                data-ua="Результати пошуку для: \"${searchQuery}\"">
+                data-en="Search results for: \\"${searchQuery}\\""
+                data-ua="Результати пошуку для: \\"${searchQuery}\\"">
                 Search results for: "${searchQuery}"
             </h1>
             <p class="search-results__count" 
@@ -136,7 +146,6 @@ function displayResults(programs, searchQuery) {
 
     const programList = resultsContainer.querySelector('.program-list');
 
-    // Додаємо програми з виділенням ключового слова
     programs.forEach(program => {
         const highlightedProgram = highlightSearchTerm(program, searchQuery);
         programList.appendChild(highlightedProgram);
@@ -144,7 +153,12 @@ function displayResults(programs, searchQuery) {
 
     mainElement.appendChild(resultsContainer);
 
-    // Оновлюємо мову для нових елементів
+    // 🟢 ДОДАНО: переконуємося, що всі додані картки відображаються
+    const visibleCards = resultsContainer.querySelectorAll('.program-card');
+    visibleCards.forEach(card => {
+        card.style.display = 'flex';
+    });
+
     if (window.updateLanguage) {
         window.updateLanguage();
     }
@@ -158,12 +172,10 @@ function highlightSearchTerm(programElement, searchQuery) {
     const elements = programElement.querySelectorAll('h2, p, span');
 
     elements.forEach(element => {
-        // Обробляємо текстовий вміст
         if (element.textContent.toLowerCase().includes(query)) {
             highlightTextInElement(element, query);
         }
 
-        // Обробляємо data-атрибути
         if (element.hasAttribute('data-ua')) {
             const uaText = element.getAttribute('data-ua');
             if (uaText.toLowerCase().includes(query)) {
@@ -189,10 +201,7 @@ function highlightTextInElement(element, query) {
     const text = element.textContent;
     const highlightedHtml = highlightText(text, query);
 
-    // Зберігаємо початкові атрибути
-    const originalHTML = element.innerHTML;
     const dataAttributes = {};
-
     for (let attr of element.attributes) {
         if (attr.name.startsWith('data-')) {
             dataAttributes[attr.name] = attr.value;
@@ -200,8 +209,6 @@ function highlightTextInElement(element, query) {
     }
 
     element.innerHTML = highlightedHtml;
-
-    // Відновлюємо data-атрибути
     Object.keys(dataAttributes).forEach(attr => {
         element.setAttribute(attr, dataAttributes[attr]);
     });
@@ -237,8 +244,8 @@ function displayNoResults(searchQuery = '') {
                 </h1>
                 ${searchQuery ? `
                 <p class="search-results__message"
-                   data-en="No programs found for: \"${searchQuery}\""
-                   data-ua="Не знайдено програм для: \"${searchQuery}\"">
+                   data-en="No programs found for: \\"${searchQuery}\\""
+                   data-ua="Не знайдено програм для: \\"${searchQuery}\\"">
                    No programs found for: "${searchQuery}"
                 </p>
                 ` : ''}
