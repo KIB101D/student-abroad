@@ -2015,7 +2015,16 @@ select {
   align-items: center;
   text-align: center;
   padding: 10px;
+}
 
+.program-card-m {
+  flex: 0 0 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
 }
 
 .university-card-m__img {
@@ -2029,16 +2038,15 @@ select {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  flex: 1;
 
   h2 {
-
     color: #333;
     margin: 0;
     font-size: 18px;
   }
 
   p {
-
     font-size: 14px;
     color: #555;
     margin: 5px 0;
@@ -2047,8 +2055,28 @@ select {
     justify-content: center;
     gap: 5px;
   }
+}
 
+.program-info-m {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 
+  h2 {
+    color: #333;
+    margin: 0;
+    font-size: 25px;
+  }
+
+  p {
+    font-size: 18px;
+    color: #555;
+    margin: 5px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
 }
 
 .slider__arrow {
@@ -2068,8 +2096,16 @@ select {
   left: -25px;
 }
 
+.slider__arrow--left-p {
+  left: 8px;
+}
+
 .slider__arrow--right {
   right: -25px;
+}
+
+.slider__arrow--right-p {
+  right: 8px;
 }
 
 .slider__arrow--left::before,
@@ -2089,7 +2125,25 @@ select {
 
 .slider__arrow--left::before {
   transform: translate(-50%, -50%) rotate(225deg);
-  /* Виправлено на 225° для правильного лівого напрямку */
+}
+
+.slider__arrow--left-p::before,
+.slider__arrow--right-p::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  width: 1em;
+  height: 1em;
+  border-right: 0.3em solid var(--color-grey);
+  border-top: 0.3em solid var(--color-grey);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-sizing: border-box;
+}
+
+.slider__arrow--left-p::before {
+  transform: translate(-50%, -50%) rotate(225deg);
 }
 
 .slider__arrow:hover {
@@ -2311,6 +2365,10 @@ select {
   display: flex;
   flex-direction: column;
   gap: 40px;
+
+  @include respond(mobile) {
+    display: none;
+  }
 }
 
 .program-card {
@@ -2517,7 +2575,7 @@ select {
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  column-gap: 50px;
+  column-gap: 30px;
 
   @include respond(mobile) {
     font-size: 7px;
@@ -2536,7 +2594,7 @@ select {
   padding-top: 20px;
 
   @include respond(mobile) {
-    font-size: 18px;
+    font-size: 16.7px;
     white-space: nowrap;
   }
 }
@@ -2556,8 +2614,8 @@ select {
   white-space: nowrap;
 
   @include respond(mobile) {
-    font-size: 22px;
-    transform: translate(14px, 7px);
+    font-size: 25px;
+    transform: translate(10px, 7px);
   }
 }
 
