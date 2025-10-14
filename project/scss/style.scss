@@ -2369,6 +2369,12 @@ select {
   @include respond(mobile) {
     display: none;
   }
+  
+  body.search-page .program-list {
+    @include respond(mobile) {
+      display: flex !important;
+    }
+  }
 }
 
 .program-card {
