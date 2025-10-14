@@ -6,6 +6,7 @@ export function initProgramSearch() {
 
     // Перевіряємо, чи ми на сторінці search.html
     if (window.location.pathname.includes('search.html')) {
+        document.body.classList.add('search-page');
         processSearchPage();
 
         document.addEventListener('DOMContentLoaded', () => {
