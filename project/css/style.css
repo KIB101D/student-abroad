@@ -3397,5 +3397,20 @@ video,
   .search-results__count {
     font-size: 1.1rem;
   }
+} 
+
+.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
 }
-/*# sourceMappingURL=style.css.map */
+
+.nav-arrow {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.pagination-nav {
+  display: none;
+  /* дефолтно приховані */
+}/*# sourceMappingURL=style.css.map */
