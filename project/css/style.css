@@ -3398,19 +3398,4 @@ video,
     font-size: 1.1rem;
   }
 }
-.hidden {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-}
-
-.nav-arrow {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-       appearance: none;
-}
-
-.pagination-nav {
-  display: none;
-  /* дефолтно приховані */
-}/*# sourceMappingURL=style.css.map */
+/*# sourceMappingURL=style.css.map */
