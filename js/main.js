@@ -10,6 +10,7 @@ import { initSlider } from "./modules/slider-mobile.js";
 import { modalBtnClose } from "./modules/modal.js";
 import { burgerMenu } from "./modules/burger-menu.js";
 import { initProgramSearch } from "./modules/program-search.js";
+import { initTrimText } from "./modules/trimProgramText.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initLanguageSwitcher();
@@ -22,4 +23,5 @@ document.addEventListener("DOMContentLoaded", () => {
   burgerMenu();
   initFAQ();
   initProgramSearch();
+  initTrimText()
 });
